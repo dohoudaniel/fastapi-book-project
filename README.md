@@ -1,4 +1,4 @@
-# FastAPI Book Management API
+<!-- # FastAPI Book Management API
 
 ## Overview
 
@@ -143,4 +143,224 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Support
 
-For support, please open an issue in the GitHub repository.
+For support, please open an issue in the GitHub repository. -->
+
+# FastAPI Application with Nginx Reverse Proxy & CI/CD Deployment
+
+## 🚀 Overview
+This repository contains a FastAPI application that is deployed using **Nginx as a reverse proxy** and a **GitHub Actions CI/CD pipeline** for automated deployment.
+
+## 📌 Features
+- RESTful API built with **FastAPI**
+- **Nginx** as a reverse proxy
+- **Uvicorn** for production
+- **GitHub Actions** for CI/CD
+
+---
+
+## 📂 Project Setup
+
+### **1️⃣ Clone the Repository**
+```sh
+git clone https://github.com/dohoudaniel/fastapi-book-project.git
+cd your-repo
+```
+
+### **2️⃣ Create and Activate a Virtual Environment**
+```sh
+python3 -m venv venv
+source venv/bin/activate  # On macOS/Linux
+venv\Scripts\activate    # On Windows
+```
+
+### **3️⃣ Install Dependencies**
+```sh
+pip install -r requirements.txt
+```
+
+### **4️⃣ Run the FastAPI Application Locally**
+```sh
+uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+```
+Access the API at: [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
+
+---
+
+## 🚀 Deployment to Ubuntu Server
+
+### **1️⃣ Install Required Packages on the Server**
+```sh
+sudo apt update
+sudo apt install python3-pip python3-venv nginx git -y
+```
+
+### **2️⃣ Clone the Repository on the Server**
+```sh
+cd /var/www
+sudo git clone https://github.com/your-dohoudaniel/fastapi-book-project.git
+cd fastapi-book-project
+```
+
+### **3️⃣ Set Up the Virtual Environment**
+```sh
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+```
+
+### **4️⃣ Start FastAPI with Gunicorn (Production Mode)**
+```sh
+uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+```
+
+---
+
+## 🌐 Configure Nginx as a Reverse Proxy
+
+### **1️⃣ Install Nginx (If Not Installed)**
+```sh
+sudo apt install nginx -y
+```
+
+### **2️⃣ Create an Nginx Configuration File**
+```sh
+sudo nano /etc/nginx/sites-available/fastapi
+```
+
+**Paste the following:**
+```nginx
+server {
+    listen 80;
+    server_name your_domain_or_ip;
+
+    location / {
+        proxy_pass http://127.0.0.1:8000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    }
+}
+```
+<!--
+### **3️⃣ Enable the Configuration and Restart Nginx**
+```sh
+sudo ln -s /etc/nginx/sites-available/fastapi /etc/nginx/sites-enabled/
+sudo nginx -t
+sudo systemctl restart nginx
+```
+-->
+### **4️⃣ Allow Firewall Rules**
+```sh
+sudo ufw allow 'Nginx Full'
+sudo ufw reload
+```
+
+---
+
+## 🔄 CI/CD Deployment with GitHub Actions
+
+### **1️⃣ Set Up SSH Keys for Deployment**
+On your **local machine**, generate SSH keys:
+```sh
+ssh-keygen -t rsa -b 4096 -C "github-actions"
+```
+Copy the **public key (`id_rsa.pub`)** to the server:
+```sh
+echo "your-public-key-content" >> ~/.ssh/authorized_keys
+```
+
+### **2️⃣ Add Secrets to GitHub**
+Go to **GitHub Repository > Settings > Secrets and Variables > Actions** and add:
+- `SSH_PRIVATE_KEY` → Copy from `~/.ssh/id_rsa`
+- `SERVER_IP` → Your server's IP address
+- `SERVER_USER` → Your SSH username
+
+### **3️⃣ GitHub Actions Deployment Workflow**
+Create `.github/workflows/deploy.yml` and add:
+```yaml
+name: Deploy FastAPI App
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+      
+      - name: Set up SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
+
+      - name: Deploy FastAPI Application
+        run: |
+          ssh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
+            cd /var/www/your-repo
+            git pull origin main
+            pip install -r requirements.txt
+            sudo systemctl restart fastapi
+            sudo systemctl restart nginx
+          EOF
+```
+
+### **4️⃣ Push to GitHub and Trigger Deployment**
+```sh
+git add .
+git commit -m "Deploy FastAPI with Nginx"
+git push origin main
+```
+
+GitHub Actions will automatically **deploy the latest changes** to your server.
+
+---
+
+## ✅ Testing Your Deployment
+Check if Nginx and FastAPI are working:
+```sh
+curl -I http://your_domain_or_ip
+```
+Expected response:
+```
+HTTP/1.1 200 OK
+```
+If you set up SSL:
+```sh
+curl -I https://your_domain_or_ip
+```
+
+---
+
+## 🔥 Troubleshooting
+- Check if FastAPI is running:
+  ```sh
+  sudo systemctl status fastapi
+  ```
+- Check if Nginx is running:
+  ```sh
+  sudo systemctl status nginx
+  ```
+- View logs for errors:
+  ```sh
+  sudo journalctl -u nginx --no-pager | tail -n 20
+  ```
+  ```sh
+  sudo journalctl -u fastapi --no-pager | tail -n 20
+  ```
+
+---
+
+## 📜 License
+This project is licensed under the **MIT License**.
+
+---
+
+## 👨‍💻 Author
+Developed by **Daniel Dohou** - [GitHub Profile](https://github.com/your-username) 🚀
+
