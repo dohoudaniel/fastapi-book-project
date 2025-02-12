@@ -55,7 +55,7 @@ async def get_books() -> OrderedDict[int, Book]:
 #     )
 #
 
-# Retrieving a book by its id
+# Retrieving a book by its id endpoint
 @router.get("/{book_id}", response_model=Book, status_code=status.HTTP_200_OK)
 async def get_book(book_id: int):
     # Retrieve the book from the database by its id
@@ -73,6 +73,11 @@ async def get_book(book_id: int):
         status_code=status.HTTP_200_OK,
         content=book.model_dump(),
     )
+
+# Then the static route for all books
+@router.get("/", response_model=OrderedDict[int, Book], status_code=status.HTTP_200_OK)
+async def get_books() -> OrderedDict[int, Book]:
+    return db.get_books()
 
 
 @router.put("/{book_id}", response_model=Book, status_code=status.HTTP_200_OK)

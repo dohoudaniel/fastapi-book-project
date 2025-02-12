@@ -163,7 +163,7 @@ This repository contains a FastAPI application that is deployed using **Nginx as
 ### **1️⃣ Clone the Repository**
 ```sh
 git clone https://github.com/dohoudaniel/fastapi-book-project.git
-cd your-repo
+cd fastapi-book-project
 ```
 
 ### **2️⃣ Create and Activate a Virtual Environment**
