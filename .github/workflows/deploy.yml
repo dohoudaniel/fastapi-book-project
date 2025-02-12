@@ -31,17 +31,17 @@ jobs:
           chmod +x ~/.ssh/id_rsa
           ssh-keyscan -H $SERVER_IP >> ~/.ssh/known_hosts
             chmod 644 ~/.ssh/known_hosts
-            EOF
+
 
       - name: SSH Into Web Server, Fetch Latest Changes and Run Changes
         run: |
           ssh $USER@$SERVER_IP -i ~/.ssh/id_rsa
           cd fastapi-book-project
           git pull
-          python3 -m venv venv
+          python3.10 -m venv venv
           source venv/bin/activate
           python -m ensurepip --upgrade
           pip install --upgrade pip
           pip install -r requirements.txt
           uvicorn main:app --host 0.0.0.0 --port 8000 --reload
-            EOF
+
