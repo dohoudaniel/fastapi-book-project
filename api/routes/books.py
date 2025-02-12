@@ -57,7 +57,7 @@ async def get_books() -> OrderedDict[int, Book]:
 
 # Retrieving a book by its id endpoint
 @router.get("/{book_id}", response_model=Book, status_code=status.HTTP_200_OK)
-async def get_book(book_id: int):
+async def get_book(book_id: int) -> Book:
     # Retrieve the book from the database by its id
     book = db.get_book(book_id)
 
