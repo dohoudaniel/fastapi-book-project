@@ -36,6 +36,9 @@ jobs:
       - name: SSH Into Web Server, Fetch Latest Changes and Run Changes
         run: |
           ssh $USER@$SERVER_IP -i ~/.ssh/id_rsa
+          sudo apt install software-properties-common -y
+          sudo add-apt-repository ppa:deadsnakes/ppa
+          sudo apt install python3.10 python3.10-venv python3.10-dev -y
           git clone https://github.com/dohoudaniel/fastapi-book-project.git
           cd fastapi-book-project
           git pull
