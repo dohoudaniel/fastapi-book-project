@@ -1,4 +1,4 @@
-<!-- # FastAPI Book Management API
+# FastAPI Book Management API
 
 ## Overview
 
@@ -79,6 +79,80 @@ uvicorn main:app
 - Swagger UI: http://localhost:8000/docs
 - ReDoc: http://localhost:8000/redoc
 
+
+---
+
+## 🚀 Deployment to Ubuntu Server
+
+### **1️⃣ Install Required Packages on the Server**
+```sh
+sudo apt update
+sudo apt install python3-pip python3-venv nginx git -y
+```
+
+### **2️⃣ Clone the Repository on the Server**
+```sh
+cd /var/www
+sudo git clone https://github.com/your-dohoudaniel/fastapi-book-project.git
+cd fastapi-book-project
+```
+
+### **3️⃣ Set Up the Virtual Environment**
+```sh
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+```
+
+### **4️⃣ Start FastAPI with Gunicorn (Production Mode)**
+```sh
+uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+```
+
+---
+
+## 🌐 Configure Nginx as a Reverse Proxy
+
+### **1️⃣ Install Nginx (If Not Installed)**
+```sh
+sudo apt install nginx -y
+```
+
+### **2️⃣ Create an Nginx Configuration File**
+```sh
+sudo nano /etc/nginx/sites-available/fastapi
+```
+
+**Paste the following:**
+```nginx
+server {
+    listen 80;
+    server_name your_domain_or_ip;
+
+    location / {
+        proxy_pass http://127.0.0.1:8000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    }
+}
+```
+
+### **3️⃣ Enable the Configuration and Restart Nginx**
+```sh
+sudo ln -s /etc/nginx/sites-available/fastapi /etc/nginx/sites-enabled/
+sudo nginx -t
+sudo systemctl restart nginx
+```
+
+
+### **4️⃣ Allow Firewall Rules**
+```sh
+sudo ufw allow 'Nginx Full'
+sudo ufw reload
+```
+
+
 ## API Endpoints
 
 ### Books
@@ -143,8 +217,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Support
 
-For support, please open an issue in the GitHub repository. -->
+For support, please open an issue in the GitHub repository.
 
+<!--
 # FastAPI Application with Nginx Reverse Proxy & CI/CD Deployment
 
 ## 🚀 Overview
@@ -184,76 +259,8 @@ uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 ```
 Access the API at: [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
 
----
 
-## 🚀 Deployment to Ubuntu Server
 
-### **1️⃣ Install Required Packages on the Server**
-```sh
-sudo apt update
-sudo apt install python3-pip python3-venv nginx git -y
-```
-
-### **2️⃣ Clone the Repository on the Server**
-```sh
-cd /var/www
-sudo git clone https://github.com/your-dohoudaniel/fastapi-book-project.git
-cd fastapi-book-project
-```
-
-### **3️⃣ Set Up the Virtual Environment**
-```sh
-python3 -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
-```
-
-### **4️⃣ Start FastAPI with Gunicorn (Production Mode)**
-```sh
-uvicorn main:app --host 0.0.0.0 --port 8000 --reload
-```
-
----
-
-## 🌐 Configure Nginx as a Reverse Proxy
-
-### **1️⃣ Install Nginx (If Not Installed)**
-```sh
-sudo apt install nginx -y
-```
-
-### **2️⃣ Create an Nginx Configuration File**
-```sh
-sudo nano /etc/nginx/sites-available/fastapi
-```
-
-**Paste the following:**
-```nginx
-server {
-    listen 80;
-    server_name your_domain_or_ip;
-
-    location / {
-        proxy_pass http://127.0.0.1:8000;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-    }
-}
-```
-<!--
-### **3️⃣ Enable the Configuration and Restart Nginx**
-```sh
-sudo ln -s /etc/nginx/sites-available/fastapi /etc/nginx/sites-enabled/
-sudo nginx -t
-sudo systemctl restart nginx
-```
--->
-### **4️⃣ Allow Firewall Rules**
-```sh
-sudo ufw allow 'Nginx Full'
-sudo ufw reload
-```
 
 ---
 
@@ -291,7 +298,7 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
-      
+
       - name: Set up SSH
         run: |
           mkdir -p ~/.ssh
@@ -364,3 +371,4 @@ This project is licensed under the **MIT License**.
 ## 👨‍💻 Author
 Developed by **Daniel Dohou** - [GitHub Profile](https://github.com/your-username) 🚀
 
+-->
