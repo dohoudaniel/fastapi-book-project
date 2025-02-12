@@ -1,6 +1,6 @@
 from typing import OrderedDict
 
-from fastapi import APIRouter, status
+from fastapi import APIRouter, HTTPException, status
 from fastapi.responses import JSONResponse
 
 from api.db.schemas import Book, Genre, InMemoryDB
@@ -47,6 +47,7 @@ async def create_book(book: Book):
 async def get_books() -> OrderedDict[int, Book]:
     return db.get_books()
 
+# First attempt
 # @router.get("/{book_id}", response_model=Book, status_code=status.HTTP_200_OK)
 # async def get_book(book_id: int) -> Book:
 #     return JSONResponse(
@@ -55,29 +56,28 @@ async def get_books() -> OrderedDict[int, Book]:
 #     )
 #
 
-# Retrieving a book by its id endpoint
+# Retrieving a book by its id
 @router.get("/{book_id}", response_model=Book, status_code=status.HTTP_200_OK)
 async def get_book(book_id: int) -> Book:
     # Retrieve the book from the database by its id
     book = db.get_book(book_id)
 
     # If the book does not exist, return a 404 response
+    # if not book:
+    #     return JSONResponse(
+    #         status_code=status.HTTP_404_NOT_FOUND,
+    #         content={"detail": "Book not found"},
+    #     )
+
+    # # Return the book's details as a JSON response
+    # return JSONResponse(
+    #     status_code=status.HTTP_200_OK,
+    #     content=book.model_dump(),
+    # )
+    book = db.books.get(book_id)
     if not book:
-        return JSONResponse(
-            status_code=status.HTTP_404_NOT_FOUND,
-            content={"detail": "Book not found"},
-        )
-
-    # Return the book's details as a JSON response
-    return JSONResponse(
-        status_code=status.HTTP_200_OK,
-        content=book.model_dump(),
-    )
-
-# Then the static route for all books
-@router.get("/", response_model=OrderedDict[int, Book], status_code=status.HTTP_200_OK)
-async def get_books() -> OrderedDict[int, Book]:
-    return db.get_books()
+        raise HTTPException(status_code=404, detail="Book not found")
+    return book
 
 
 @router.put("/{book_id}", response_model=Book, status_code=status.HTTP_200_OK)
