@@ -36,7 +36,7 @@ jobs:
       - name: SSH Into Web Server, Fetch Latest Changes and Run Changes
         run: |
           ssh $USER@$SERVER_IP -i ~/.ssh/id_rsa
-          gh repo clone dohoudaniel/fastapi-book-project
+          git clone https://github.com/dohoudaniel/fastapi-book-project.git
           cd fastapi-book-project
           git pull
           python3.10 -m venv venv
