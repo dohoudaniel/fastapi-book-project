@@ -37,7 +37,6 @@ jobs:
             # Update packages and install prerequisites
             sudo apt install software-properties-common -y
             sudo add-apt-repository ppa:deadsnakes/ppa -y
-            sudo apt update
             sudo apt install python3.10 python3.10-venv python3.10-dev -y
 
             # Clone the repository if it doesn't exist, otherwise pull latest changes
