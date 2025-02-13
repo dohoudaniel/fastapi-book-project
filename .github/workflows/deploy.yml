@@ -25,26 +25,40 @@ jobs:
 
       - name: Set Up SSH
         run: |
-          # Setup SSH
           mkdir -p ~/.ssh
           echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H $SERVER_IP >> ~/.ssh/known_hosts
-            chmod 644 ~/.ssh/known_hosts
+          chmod 644 ~/.ssh/known_hosts
 
-
-      - name: SSH Into Web Server, Fetch Latest Changes and Run Changes
+      - name: SSH Into Web Server, Deploy Updates, and Restart Uvicorn
         run: |
-          ssh $USER@$SERVER_IP -i ~/.ssh/id_rsa
-          sudo apt install software-properties-common -y
-          sudo add-apt-repository ppa:deadsnakes/ppa
-          sudo apt install python3.10 python3.10-venv python3.10-dev -y
-          git clone https://github.com/dohoudaniel/fastapi-book-project.git
-          cd fastapi-book-project
-          git pull
-          python3.10 -m venv venv
-          source venv/bin/activate
-          python -m ensurepip --upgrade
-          pip install --upgrade pip
-          pip install -r requirements.txt
-          nohup uvicorn main:app --host 0.0.0.0 --port 8000 &
+          ssh $USER@$SERVER_IP -i ~/.ssh/id_rsa << 'EOF'
+            # Update packages and install prerequisites
+            sudo apt install software-properties-common -y
+            sudo add-apt-repository ppa:deadsnakes/ppa -y
+            sudo apt update
+            sudo apt install python3.10 python3.10-venv python3.10-dev -y
+
+            # Clone the repository if it doesn't exist, otherwise pull latest changes
+            if [ -d "fastapi-book-project" ]; then
+                cd fastapi-book-project
+                git pull origin main
+            else
+                git clone https://github.com/dohoudaniel/fastapi-book-project.git
+                cd fastapi-book-project
+            fi
+
+            # Stop any running Uvicorn process
+            pkill -f uvicorn || true
+
+            # Set up virtual environment and install dependencies
+            python3.10 -m venv venv
+            source venv/bin/activate
+            python -m ensurepip --upgrade
+            pip install --upgrade pip
+            pip install -r requirements.txt
+
+            # Start Uvicorn in the background
+            nohup uvicorn main:app --host 0.0.0.0 --port 8000 > uvicorn.log 2>&1 &
+          EOF
