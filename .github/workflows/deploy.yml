@@ -40,13 +40,13 @@ jobs:
             # sudo apt install python3.10 python3.10-venv python3.10-dev -y
 
             # Clone the repository if it doesn't exist, otherwise pull latest changes
-            if [ -d "fastapi-book-project" ]; then
-                cd fastapi-book-project
-                git pull origin main
-            else
-                git clone https://github.com/dohoudaniel/fastapi-book-project.git
-                cd fastapi-book-project
-            fi
+            # if [ -d "fastapi-book-project" ]; then
+            #     cd fastapi-book-project
+            #     git pull origin main
+            # else
+            git clone https://github.com/dohoudaniel/fastapi-book-project.git
+            cd fastapi-book-project
+            # fi
 
             # Stop any running Uvicorn process
             pkill -f uvicorn || true
