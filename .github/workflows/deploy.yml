@@ -36,8 +36,8 @@ jobs:
           ssh $USER@$SERVER_IP -i ~/.ssh/id_rsa << 'EOF'
             # Update packages and install prerequisites
             sudo apt install software-properties-common -y
-            sudo add-apt-repository ppa:deadsnakes/ppa -y
-            sudo apt install python3.10 python3.10-venv python3.10-dev -y
+            # sudo add-apt-repository ppa:deadsnakes/ppa -y
+            # sudo apt install python3.10 python3.10-venv python3.10-dev -y
 
             # Clone the repository if it doesn't exist, otherwise pull latest changes
             if [ -d "fastapi-book-project" ]; then
